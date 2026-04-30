@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const FormData = require('form-data');
 
-const BASE = 'http://localhost:5000/api';
+const BASE = process.env.BACKEND_URL || 'http://localhost:5000/api';
 const api = axios.create({ baseURL: BASE, timeout: 10000, validateStatus: () => true });
 
 let results = [];
@@ -59,7 +59,7 @@ async function run() {
       name: uniqueName,
       email: testEmail,
       phone: `9${Math.floor(Math.random() * 1000000000)}`,
-      profession: 'Tester',
+      profession: 'Student',
       password: 'Test@12345',
     });
     assert(res.status === 201, `Expected 201, got ${res.status}: ${JSON.stringify(res.data)}`);
@@ -102,7 +102,7 @@ async function run() {
   await test('POST /admin/tasks (create)', async () => {
     const res = await api.post('/admin/tasks', {
       title: 'API Test Task',
-      category: 'APK',
+      category: 'YouTube',
       description: 'Test task created by API test.',
       rewardAmount: 50,
       imageUrl: 'https://via.placeholder.com/600x400',
