@@ -162,24 +162,43 @@ const liveWinners = [
 const COLORS = ["#34d399", "#0f8b8d", "#ff9f1c", "#60a5fa", "#a78bfa", "#f472b6", "#fb923c", "#22d3ee"];
 
 /* ── Curve Divider Component ── */
-const CurveDivider = ({ fromColor, toColor, flip = false }) => (
-  <Box sx={{ position: "relative", overflow: "hidden", lineHeight: 0, background: fromColor }}>
-    <svg viewBox="0 0 1440 120" preserveAspectRatio="none" style={{ width: "100%", display: "block" }}>
-      <path d={`M0,${flip ? 120 : 0} C180,${flip ? 30 : 100} 360,${flip ? 100 : 20} 540,${flip ? 60 : 60} C720,${flip ? 20 : 100} 900,${flip ? 90 : 30} 1080,${flip ? 50 : 50} C1260,${flip ? 40 : 80} 1380,${flip ? 70 : 10} 1440,${flip ? 30 : 60} L1440,${flip ? 0 : 120} L0,${flip ? 0 : 120} Z`} fill={toColor} />
-      <path d={`M0,${flip ? 120 : 0} C200,${flip ? 50 : 90} 400,${flip ? 80 : 30} 600,${flip ? 40 : 70} C800,${flip ? 10 : 100} 1000,${flip ? 70 : 40} 1200,${flip ? 60 : 50} C1350,${flip ? 45 : 75} 1420,${flip ? 60 : 30} 1440,${flip ? 50 : 55} L1440,${flip ? 0 : 120} L0,${flip ? 0 : 120} Z`} fill={toColor} opacity="0.4" />
-    </svg>
-  </Box>
-);
+const CurveDivider = ({ fromColor, toColor, flip = false }) => {
+  const p1 = flip
+    ? "M0,120 C180,30 360,100 540,60 C720,20 900,90 1080,50 C1260,40 1380,70 1440,30 L1440,0 L0,0 Z"
+    : "M0,0 C180,100 360,20 540,60 C720,100 900,30 1080,50 C1260,80 1380,10 1440,60 L1440,120 L0,120 Z";
+  const p2 = flip
+    ? "M0,120 C200,50 400,80 600,40 C800,10 1000,70 1200,50 C1350,45 1420,60 1440,50 L1440,0 L0,0 Z"
+    : "M0,0 C200,90 400,30 600,70 C800,100 1000,40 1200,60 C1350,75 1420,30 1440,55 L1440,120 L0,120 Z";
+  return (
+    <Box sx={{ position: "relative", overflow: "hidden", lineHeight: 0, background: fromColor }}>
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none" style={{ width: "100%", display: "block" }}>
+        <path d={p1} fill={toColor} />
+        <path d={p2} fill={toColor} opacity="0.4" />
+      </svg>
+    </Box>
+  );
+};
 
-const DeepCurve = ({ fromColor, toColor, flip = false }) => (
-  <Box sx={{ position: "relative", overflow: "hidden", lineHeight: 0, background: fromColor }}>
-    <svg viewBox="0 0 1440 160" preserveAspectRatio="none" style={{ width: "100%", display: "block" }}>
-      <path d={`M0,${flip ? 160 : 0} C120,${flip ? 40 : 140} 240,${flip ? 120 : 20} 400,${flip ? 70 : 90} C560,${flip ? 20 : 140} 720,${flip ? 140 : 30} 880,${flip ? 60 : 100} C1040,${flip ? 10 : 130} 1200,${flip ? 80 : 20} 1350,${flip ? 50 : 80} 1440,${flip ? 40 : 60} L1440,${flip ? 0 : 160} L0,${flip ? 0 : 160} Z`} fill={toColor} />
-      <path d={`M0,${flip ? 160 : 0} C160,${flip ? 60 : 120} 320,${flip ? 100 : 40} 480,${flip ? 50 : 110} C640,${flip ? 10 : 150} 800,${flip ? 130 : 20} 960,${flip ? 70 : 90} C1120,${flip ? 30 : 140} 1280,${flip ? 60 : 40} 1440,${flip ? 50 : 70} L1440,${flip ? 0 : 160} L0,${flip ? 0 : 160} Z`} fill={toColor} opacity="0.3" />
-      <path d={`M0,${flip ? 160 : 0} C200,${flip ? 80 : 110} 400,${flip ? 110 : 60} 600,${flip ? 60 : 100} C800,${flip ? 20 : 140} 1000,${flip ? 100 : 40} 1200,${flip ? 80 : 60} 1400,${flip ? 70 : 50} 1440,${flip ? 65 : 55} L1440,${flip ? 0 : 160} L0,${flip ? 0 : 160} Z`} fill={toColor} opacity="0.15" />
-    </svg>
-  </Box>
-);
+const DeepCurve = ({ fromColor, toColor, flip = false }) => {
+  const p1 = flip
+    ? "M0,160 C120,40 240,120 400,70 C560,20 720,140 880,60 C1040,10 1200,80 1350,50 1440,40 L1440,0 L0,0 Z"
+    : "M0,0 C120,140 240,20 400,90 C560,140 720,30 880,100 C1040,130 1200,20 1350,80 1440,60 L1440,160 L0,160 Z";
+  const p2 = flip
+    ? "M0,160 C160,60 320,100 480,50 C640,10 800,130 960,70 C1120,30 1280,60 1440,50 L1440,0 L0,0 Z"
+    : "M0,0 C160,120 320,40 480,110 C640,150 800,20 960,90 C1120,140 1280,40 1440,70 L1440,160 L0,160 Z";
+  const p3 = flip
+    ? "M0,160 C200,80 400,110 600,60 C800,20 1000,140 1200,80 C1400,70 1440,65 L1440,0 L0,0 Z"
+    : "M0,0 C200,110 400,60 600,100 C800,140 1000,40 1200,60 C1400,50 1440,55 L1440,160 L0,160 Z";
+  return (
+    <Box sx={{ position: "relative", overflow: "hidden", lineHeight: 0, background: fromColor }}>
+      <svg viewBox="0 0 1440 160" preserveAspectRatio="none" style={{ width: "100%", display: "block" }}>
+        <path d={p1} fill={toColor} />
+        <path d={p2} fill={toColor} opacity="0.3" />
+        <path d={p3} fill={toColor} opacity="0.15" />
+      </svg>
+    </Box>
+  );
+};
 
 const HomePage = () => {
   const theme = useTheme();
