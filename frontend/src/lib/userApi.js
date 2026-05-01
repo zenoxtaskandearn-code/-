@@ -12,4 +12,6 @@ export const userApi = {
   updateProfile: (payload) => api.patch("/user/profile", payload),
   getSettings: () => api.get("/user/settings"),
   updateSettings: (payload) => api.patch("/user/settings", payload),
+  getReferralStats: () => api.get("/referral/stats"),
+  changePassword: (payload) => api.post("/auth/change-password", payload),
 };

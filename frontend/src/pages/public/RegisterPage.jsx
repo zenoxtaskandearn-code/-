@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Box,
@@ -6,6 +6,7 @@ import {
   Card,
   Container,
   Grid,
+  InputAdornment,
   Link,
   MenuItem,
   Select,
@@ -14,8 +15,9 @@ import {
   Typography,
 } from "@mui/material";
 import { motion } from "framer-motion";
+import { FaGift } from "react-icons/fa";
 import { RiBarChartBoxFill, RiRocket2Fill, RiShieldCheckFill } from "react-icons/ri";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getErrorMessage } from "../../lib/errors";
 
@@ -32,6 +34,7 @@ const PROFESSIONS = [
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { register } = useAuth();
   const [form, setForm] = useState({
     name: "",
@@ -39,9 +42,18 @@ const RegisterPage = () => {
     phone: "",
     profession: "",
     password: "",
+    referralCode: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      setForm((prev) => ({ ...prev, referralCode: ref.toUpperCase() }));
+    }
+  }, [location.search]);
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -100,6 +112,26 @@ const RegisterPage = () => {
                     ))}
                   </Select>
                   <TextField label="Password" name="password" type="password" value={form.password} onChange={onChange} required />
+                  <TextField
+                    label="Referral Code (optional)"
+                    name="referralCode"
+                    value={form.referralCode}
+                    onChange={onChange}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <FaGift style={{ color: "#ff9f1c" }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    helperText="Have a referral code? Enter it to get bonuses"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 2,
+                        background: "rgba(255,255,255,0.02)",
+                      },
+                    }}
+                  />
                   <Button type="submit" variant="contained" size="large" disabled={loading} sx={{ height: 48 }}>
                     {loading ? "Creating account..." : "Create Account"}
                   </Button>

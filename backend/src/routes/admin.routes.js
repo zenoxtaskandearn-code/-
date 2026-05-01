@@ -12,6 +12,10 @@ const {
   listPendingCompletions,
   reviewTaskCompletion,
 } = require("../controllers/admin.controller");
+const {
+  getReferralSetting,
+  updateReferralSetting,
+} = require("../controllers/referral.controller");
 const { authenticate, authorize } = require("../middlewares/auth.middleware");
 const { ROLES } = require("../constants");
 const validate = require("../middlewares/validate.middleware");
@@ -63,5 +67,8 @@ router.patch(
   validate(reviewStatusSchema),
   reviewTaskCompletion
 );
+
+router.get("/settings/referral", getReferralSetting);
+router.patch("/settings/referral", updateReferralSetting);
 
 module.exports = router;

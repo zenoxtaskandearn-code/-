@@ -12,4 +12,6 @@ export const adminApi = {
   deleteTask: (id) => api.delete(`/admin/tasks/${id}`),
   getCompletions: (params) => api.get("/admin/completions", { params }),
   reviewCompletion: (id, payload) => api.patch(`/admin/completions/${id}`, payload),
+  getReferralSetting: () => api.get("/admin/settings/referral"),
+  updateReferralSetting: (payload) => api.patch("/admin/settings/referral", payload),
 };
