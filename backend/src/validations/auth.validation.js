@@ -6,12 +6,15 @@ const registerSchema = z.object({
   phone: z.string().min(10).max(20),
   profession: z.enum(["Student", "Freelancer", "Developer", "Designer", "Marketer", "Content Creator", "Business Owner", "Other"]),
   password: z.string().min(6),
-  referralCode: z.string().min(4).max(10).optional(),
+  referralCode: z.preprocess(
+    (val) => (typeof val === "string" && val.trim() === "" ? undefined : val),
+    z.string().min(4).max(10).optional()
+  ),
 });
 
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8).max(64),
+  password: z.string().min(6).max(64),
 });
 
 const refreshSchema = z.object({
