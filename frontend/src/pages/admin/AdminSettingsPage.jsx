@@ -21,6 +21,7 @@ import { getErrorMessage } from "../../lib/errors";
 
 const AdminSettingsPage = () => {
   const [referralReward, setReferralReward] = useState("");
+  const [minWithdrawal, setMinWithdrawal] = useState("");
   const [referralLoading, setReferralLoading] = useState(true);
   const [referralError, setReferralError] = useState("");
   const [referralSuccess, setReferralSuccess] = useState("");
@@ -36,6 +37,7 @@ const AdminSettingsPage = () => {
       try {
         const { data: response } = await adminApi.getReferralSetting();
         setReferralReward(String(response?.data?.referralRewardAmount || 0));
+        setMinWithdrawal(String(response?.data?.minWithdrawalAmount || 0));
       } catch (apiError) {
         setReferralError(getErrorMessage(apiError));
       } finally {
@@ -52,8 +54,11 @@ const AdminSettingsPage = () => {
     setReferralSaving(true);
 
     try {
-      await adminApi.updateReferralSetting({ rewardAmount: Number(referralReward) });
-      setReferralSuccess("Referral reward amount updated successfully");
+      await adminApi.updateReferralSetting({
+        rewardAmount: Number(referralReward),
+        minWithdrawalAmount: Number(minWithdrawal),
+      });
+      setReferralSuccess("Settings updated successfully");
     } catch (apiError) {
       setReferralError(getErrorMessage(apiError, "Failed to update"));
     } finally {
@@ -152,6 +157,29 @@ const AdminSettingsPage = () => {
                         ),
                       }}
                       helperText="Users earn this amount when someone joins using their code"
+                      sx={{
+                        mb: 2,
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                          background: "rgba(255,255,255,0.03)",
+                        },
+                      }}
+                    />
+
+                    <TextField
+                      label="Min Withdrawal Amount (₹)"
+                      type="number"
+                      value={minWithdrawal}
+                      onChange={(e) => setMinWithdrawal(e.target.value)}
+                      fullWidth
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Typography color="#94a3b8" fontWeight={700}>₹</Typography>
+                          </InputAdornment>
+                        ),
+                      }}
+                      helperText="Minimum amount users need to withdraw from wallet"
                       sx={{
                         mb: 2,
                         "& .MuiOutlinedInput-root": {

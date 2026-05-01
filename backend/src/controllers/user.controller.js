@@ -361,7 +361,7 @@ const getHistory = asyncHandler(async (req, res) => {
 });
 
 const getWallet = asyncHandler(async (req, res) => {
-  const [walletResult, transactionsResult, withdrawalsResult] = await Promise.all([
+  const [walletResult, transactionsResult, withdrawalsResult, settingResult] = await Promise.all([
     query(
       `SELECT balance, total_earned, total_withdrawn
        FROM wallets
@@ -385,6 +385,9 @@ const getWallet = asyncHandler(async (req, res) => {
        LIMIT 20`,
       [req.user.id]
     ),
+    query(
+      `SELECT setting_value FROM app_settings WHERE setting_key = 'min_withdrawal_amount' LIMIT 1`
+    ),
   ]);
 
   const withdrawals = withdrawalsResult.rows.map((row) => ({
@@ -393,6 +396,10 @@ const getWallet = asyncHandler(async (req, res) => {
       ? buildFileUrl(req, row.screenshot_url)
       : null,
   }));
+
+  const minWithdrawalAmount = settingResult.rows.length > 0
+    ? Number(settingResult.rows[0].setting_value) || 0
+    : 0;
 
   return res.status(200).json({
     success: true,
@@ -404,12 +411,21 @@ const getWallet = asyncHandler(async (req, res) => {
       },
       transactions: transactionsResult.rows,
       withdrawals,
+      minWithdrawalAmount,
     },
   });
 });
 
 const createWithdrawalRequest = asyncHandler(async (req, res) => {
   const { amount, upiId } = req.body;
+
+  const settingResult = await query(
+    `SELECT setting_value FROM app_settings WHERE setting_key = 'min_withdrawal_amount' LIMIT 1`
+  );
+
+  const minWithdrawalAmount = settingResult.rows.length > 0
+    ? Number(settingResult.rows[0].setting_value) || 0
+    : 0;
 
   const withdrawal = await withTransaction(async (client) => {
     const walletResult = await client.query(
@@ -428,6 +444,10 @@ const createWithdrawalRequest = asyncHandler(async (req, res) => {
     }
 
     const numericAmount = Number(amount);
+
+    if (numericAmount < minWithdrawalAmount) {
+      throw new ApiError(400, `Minimum withdrawal amount is ₹${minWithdrawalAmount.toFixed(2)}`);
+    }
 
     if (numericAmount > Number(wallet.balance)) {
       throw new ApiError(400, "Insufficient wallet balance");

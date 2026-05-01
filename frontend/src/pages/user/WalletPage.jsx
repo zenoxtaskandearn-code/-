@@ -42,7 +42,7 @@ const transactionConfig = {
 
 const WalletPage = () => {
   const [loading, setLoading] = useState(true);
-  const [walletData, setWalletData] = useState({ wallet: {}, transactions: [], withdrawals: [] });
+  const [walletData, setWalletData] = useState({ wallet: {}, transactions: [], withdrawals: [], minWithdrawalAmount: 0 });
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [withdrawForm, setWithdrawForm] = useState({ upiId: "", amount: "" });
@@ -52,7 +52,7 @@ const WalletPage = () => {
     setLoading(true);
     try {
       const { data } = await userApi.getWallet();
-      setWalletData(data?.data || { wallet: {}, transactions: [], withdrawals: [] });
+      setWalletData(data?.data || { wallet: {}, transactions: [], withdrawals: [], minWithdrawalAmount: 0 });
     } catch (apiError) {
       setError(getErrorMessage(apiError));
     } finally {
@@ -68,6 +68,11 @@ const WalletPage = () => {
     event.preventDefault();
     setError("");
     setMessage("");
+    const amount = Number(withdrawForm.amount);
+    if (amount < walletData.minWithdrawalAmount) {
+      setError(`Minimum withdrawal amount is ₹${walletData.minWithdrawalAmount.toFixed(2)}`);
+      return;
+    }
     setSubmitting(true);
     try {
       await userApi.createWithdrawal({ upiId: withdrawForm.upiId, amount: withdrawForm.amount });
@@ -138,13 +143,21 @@ const WalletPage = () => {
             <MotionCard sx={{ p: { xs: 1.5, sm: 2.5 }, borderRadius: 3, height: "100%" }}>
               <Typography variant="h6" mb={2} sx={{ fontWeight: 600 }}>Create Withdrawal Request</Typography>
               <Box component="form" onSubmit={submitWithdrawal}>
-                <Stack spacing={1.6}>
-                  <TextField label="UPI ID" value={withdrawForm.upiId} onChange={(event) => setWithdrawForm((p) => ({ ...p, upiId: event.target.value }))} required fullWidth />
-                  <TextField label="Amount" type="number" value={withdrawForm.amount} onChange={(event) => setWithdrawForm((p) => ({ ...p, amount: event.target.value }))} required fullWidth />
-                  <Button type="submit" variant="contained" disabled={submitting} sx={{ alignSelf: "flex-start" }}>
-                    {submitting ? "Submitting..." : "Submit Withdrawal"}
-                  </Button>
-                </Stack>
+                  <Stack spacing={1.6}>
+                    <TextField label="UPI ID" value={withdrawForm.upiId} onChange={(event) => setWithdrawForm((p) => ({ ...p, upiId: event.target.value }))} required fullWidth />
+                    <TextField
+                      label="Amount"
+                      type="number"
+                      value={withdrawForm.amount}
+                      onChange={(event) => setWithdrawForm((p) => ({ ...p, amount: event.target.value }))}
+                      required
+                      fullWidth
+                      helperText={`Minimum withdrawal: ₹${Number(walletData.minWithdrawalAmount || 0).toFixed(2)}`}
+                    />
+                    <Button type="submit" variant="contained" disabled={submitting} sx={{ alignSelf: "flex-start" }}>
+                      {submitting ? "Submitting..." : "Submit Withdrawal"}
+                    </Button>
+                  </Stack>
               </Box>
             </MotionCard>
           </motion.div>
